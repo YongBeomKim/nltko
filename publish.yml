@@ -1,4 +1,4 @@
-name: nltko
+name: Deployment
 
 on:
   push:
