@@ -4,8 +4,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name    = 'nltko',
-    version = '0.0.0',
+    version = '0.0.1',
     license = 'The Unlicense',
+    description = "Personally tiny useful nltk of korean tips",
     long_description = long_description,
     long_description_content_type = 'text/markdown',
     url = 'https://github.com/YongBeomKim/nltko',
@@ -18,7 +19,11 @@ setup(
         exclude  = ['jupyter', 'backup', '.vscode', '.ipynb_checkpoints']
     ),
     install_requires=[
+        'nltk',
         'tqdm',
+        'pytip',
+        'konlpy',
+        'kiwipiepy',
     ],
     python_requires = '>=3.6',
     classifiers=[
