@@ -32,27 +32,39 @@ class Morph:
         return (token, result)
 
 
-    def _kiwi_post(self, tokens):
+    def _kiwi_post(self, tokens, display=False):
         r"""Kiwi 품사 분류기 활용"""
         result = {}
+        DISABLE = False if display else True
+
         if type(tokens) == list:
-            for token in tqdm(tokens):
+            for token in tqdm(tokens, disable=DISABLE):
                 pos = [(_.form, _.tag)  for _ in kiwi.tokenize(token)]
                 result[token] = pos
+            else:
+                for token in tokens:
+                    pos = [(_.form, _.tag)  for _ in kiwi.tokenize(token)]
+                    result[token] = pos
 
         elif type(tokens) == str:
             return tokens, [(_.form, _.tag)  for _ in kiwi.tokenize(tokens)]
         return result
 
 
-    def nouns_dict(self, texts:list=None, tokens_nouns:dict=None, kiwi=False):
+    def nouns_dict(self, 
+            texts:list=None, tokens_nouns:dict=None, 
+            kiwi:bool=False, display:bool=False
+        ):
 
         r""" 명사태그 추출하기
         texts (List[])      : 태그 추출작업을 위한 단어목록
         tokens_nouns (Dict) : 품사 Tag 내용이 추가된 데이터 
         kiwi  (bool)        : Mecab 대신 Kiwi 태크사용 """
+        DISABLE = False if display else True
 
-        print("*"*8," Create Nouns Dict ...")
+        if display:
+            print("*"*8," Create Nouns Dict ...")
+
         if texts is not None:
             assert type(texts) == list,\
                 f"`{type(texts)}` only allowd `list` data"
@@ -60,8 +72,9 @@ class Morph:
         if ((tokens_nouns is None) & (type(texts) == list)):
             if kiwi: # Kiwi 활용한 품사태그
                 tokens_nouns = self._kiwi_post(texts)
+
             else:    # Mecab 활용한 품사태그
-                tokens_nouns = [self._pos(_)  for _ in tqdm(texts)]
+                tokens_nouns = [self._pos(_)  for _ in tqdm(texts, disable=DISABLE)]
                 tokens_nouns = {_[0]:_[1]     for _ in tokens_nouns}
         else:
             assert type(tokens_nouns) == dict,\
@@ -72,17 +85,18 @@ class Morph:
             k : list(filter(lambda x : x[1].find('NN') != -1, v))  
             for k,v in tokens_nouns.items()
         }
-        tokens_nouns = {k:v   for k,v in tokens_nouns.items()  if len(v)>0}
+        tokens_nouns = {k:v   for k,v in tokens_nouns.items()  if len(v) > 0}
 
         # 발견된 마지막 Nouns 단어를 기준으로 Token 필터링
         nouns_dict = {}
-        for _token, _tags in tqdm(tokens_nouns.items()):
+        for _token, _tags in tqdm(tokens_nouns.items(), disable=DISABLE):
             _last_noun = _tags[-1][0]
             _idx       = _token.find(_last_noun)
             _new_token = _token[:_idx] + _last_noun
             # 추출된 명사가 1글자 이상일 때
             if len(_new_token) > 1:
                 nouns_dict[_token] = _new_token
+
         return nouns_dict
 
 

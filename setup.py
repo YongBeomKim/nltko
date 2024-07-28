@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name    = 'nltko',
-    version = '0.0.1',
+    version = '0.0.2',
     license = 'The Unlicense',
     description = "Personally tiny useful nltk of korean tips",
     long_description = long_description,
